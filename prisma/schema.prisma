@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id         String      @id @default(cuid())
+  nome       String
+  email      String      @unique
+  senha      String?
+  telefone   String?
+  endereco   String?
+  perfil     Perfil      @default(CLIENTE)
+  alugueis   Aluguel[]
+  avaliacoes Avaliacao[]
+  criadoEm   DateTime    @default(now())
+}
+
+enum Perfil {
+  CLIENTE
+  ADMIN
+}
+
+model Categoria {
+  id    String        @id @default(cuid())
+  nome  String
+  itens Equipamento[]
+}
+
+model Equipamento {
+  id          String      @id @default(cuid())
+  nome        String
+  descricao   String
+  categoriaId String
+  categoria   Categoria   @relation(fields: [categoriaId], references: [id])
+  precoPorDia Float
+  estoque     Int
+  imagens     String[]
+  disponivel  Boolean     @default(true)
+  alugueis    Aluguel[]
+  avaliacoes  Avaliacao[]
+  criadoEm    DateTime    @default(now())
+}
+
+model Aluguel {
+  id            String        @id @default(cuid())
+  usuarioId     String
+  usuario       Usuario       @relation(fields: [usuarioId], references: [id])
+  equipamentoId String
+  equipamento   Equipamento   @relation(fields: [equipamentoId], references: [id])
+  dataInicio    DateTime
+  dataFim       DateTime
+  precoTotal    Float
+  entrega       Boolean       @default(false)
+  endereco      String?
+  status        StatusAluguel @default(PENDENTE)
+  pagamento     Pagamento?
+  avaliacao     Avaliacao?
+  criadoEm      DateTime      @default(now())
+}
+
+enum StatusAluguel {
+  PENDENTE
+  CONFIRMADO
+  ATIVO
+  DEVOLVIDO
+  CANCELADO
+}
+
+model Pagamento {
+  id              String   @id @default(cuid())
+  aluguelId       String   @unique
+  aluguel         Aluguel  @relation(fields: [aluguelId], references: [id])
+  stripePaymentId String
+  valor           Float
+  status          String
+  criadoEm        DateTime @default(now())
+}
+
+model Avaliacao {
+  id            String      @id @default(cuid())
+  usuarioId     String
+  usuario       Usuario     @relation(fields: [usuarioId], references: [id])
+  equipamentoId String
+  equipamento   Equipamento @relation(fields: [equipamentoId], references: [id])
+  aluguelId     String      @unique
+  aluguel       Aluguel     @relation(fields: [aluguelId], references: [id])
+  nota          Int
+  comentario    String?
+  criadoEm      DateTime    @default(now())
+}
