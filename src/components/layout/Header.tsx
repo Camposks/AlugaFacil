@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import Image from "next/image";
 
 const categorias = [
   "Todos",
@@ -34,18 +35,15 @@ export default function Header() {
       <div className="flex items-center justify-between px-8 h-16 gap-4">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <svg width="36" height="36" viewBox="0 0 42 42" fill="none">
-            <rect width="42" height="42" rx="10" fill="#E1F5EE"/>
-            <path d="M21 10 L30 15 L30 24 C30 29 21 33 21 33 C21 33 12 29 12 24 L12 15 Z" fill="rgba(29,158,117,0.15)" stroke="#9FE1CB" strokeWidth="1.2"/>
-            <path d="M17 21 L20 24 L26 18" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="30" cy="29" r="6" fill="#0F6E56"/>
-            <path d="M28 29 L29.5 30.5 L32.5 27.5" stroke="#9FE1CB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <div className="flex flex-col leading-tight">
-            <span className="text-[#1D9E75] text-base font-medium">AlugaFácil</span>
-            <span className="text-gray-400 text-[9px] tracking-widest uppercase">equipamentos</span>
-          </div>
+        <Link href="/" className="flex items-center shrink-0">
+          <Image
+            src="/logo.png"
+            alt="AlugaFácil"
+            width={120}
+            height={50}
+            className="object-contain brightness-0 invert"
+            style={{ width: 120, height: "auto" }}
+          />
         </Link>
 
         {/* Busca */}

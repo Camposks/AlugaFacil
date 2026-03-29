@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -72,20 +73,14 @@ export default function LoginPage() {
         <div className="bg-[#1D9E75] p-10 flex flex-col justify-between">
           <div>
             {/* Logo */}
-            <div className="flex items-center gap-3 mb-10">
-              <div className="w-11 h-11 relative">
-                <svg width="44" height="44" viewBox="0 0 42 42" fill="none">
-                  <rect width="42" height="42" rx="10" fill="rgba(255,255,255,0.15)"/>
-                  <path d="M21 10 L30 15 L30 24 C30 29 21 33 21 33 C21 33 12 29 12 24 L12 15 Z" fill="rgba(255,255,255,0.15)" stroke="#9FE1CB" strokeWidth="1.2"/>
-                  <path d="M17 21 L20 24 L26 18" stroke="#E1F5EE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <circle cx="30" cy="29" r="6" fill="#0F6E56"/>
-                  <path d="M28 29 L29.5 30.5 L32.5 27.5" stroke="#9FE1CB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div className="flex flex-col leading-tight">
-                <span className="text-[#E1F5EE] text-lg font-medium">AlugaFácil</span>
-                <span className="text-[#9FE1CB] text-[10px] tracking-widest uppercase">equipamentos</span>
-              </div>
+            <div className="mb-10">
+              <Image
+                src="/logo.png"
+                alt="AlugaFácil"
+                width={180}
+                height={80}
+                className="object-contain brightness-0 invert"
+              />
             </div>
 
             {/* Texto hero */}
