@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import DeletarEquipamento from "@/components/admin/DeletarEquipamento";
 
 export default async function AdminEquipamentos() {
   const equipamentos = await prisma.equipamento.findMany({
@@ -81,6 +82,7 @@ export default async function AdminEquipamentos() {
                             <circle cx="12" cy="12" r="3"/>
                           </svg>
                         </Link>
+                        <DeletarEquipamento equipamentoId={eq.id} nome={eq.nome} />
                       </div>
                     </td>
                   </tr>

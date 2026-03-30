@@ -5,12 +5,13 @@ import ReservaForm from "@/components/equipment/ReservaForm";
 import Image from "next/image";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function DetalhesEquipamento({ params }: Props) {
+  const { id } = await params;
   const equipamento = await prisma.equipamento.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       categoria: true,
       avaliacoes: {
@@ -74,7 +75,7 @@ function tempoRelativo(data: Date) {
                   src={equipamento.imagens[0]}
                   alt={equipamento.nome}
                   fill
-                  className="object-cover"
+                  className="object-contain p-2"
                 />
               ) : (
                 <svg className="w-14 h-14 stroke-gray-300" viewBox="0 0 24 24" fill="none" strokeWidth="1.2">
@@ -182,7 +183,7 @@ function tempoRelativo(data: Date) {
                   >
                     <div className="relative h-20 bg-gray-50 flex items-center justify-center">
                       {rel.imagens[0] ? (
-                        <Image src={rel.imagens[0]} alt={rel.nome} fill className="object-cover"/>
+                        <Image src={rel.imagens[0]} alt={rel.nome} fill className="object-contain p-2"/>
                       ) : (
                         <svg className="w-8 h-8 stroke-gray-300" viewBox="0 0 24 24" fill="none" strokeWidth="1.5">
                           <rect x="3" y="3" width="18" height="18" rx="2"/>

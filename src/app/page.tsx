@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-
+import Image from "next/image";
 
 async function getEquipamentos() {
   try {
@@ -86,9 +86,15 @@ export default async function Home() {
           <div className="grid grid-cols-4 gap-4">
             {equipamentos.map((eq) => (
               <div key={eq.id} className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
-                <div className="h-36 bg-gray-50 flex items-center justify-center">
+                <div className="relative h-48 bg-gray-50 flex items-center justify-center">
                   {eq.imagens[0] ? (
-                    <img src={eq.imagens[0]} alt={eq.nome} className="w-full h-full object-cover" />
+                    <Image
+                      src={eq.imagens[0]}
+                      alt={eq.nome}
+                      fill
+                      className="object-contain p-2"
+                      sizes="(max-width: 768px) 100vw, 25vw"
+                    />
                   ) : (
                     <svg className="w-10 h-10 stroke-gray-300" viewBox="0 0 24 24" fill="none" strokeWidth="1.5">
                       <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>

@@ -15,12 +15,17 @@ export default function ReservaForm({ equipamentoId, precoPorDia, disponivel }: 
   const router = useRouter();
 
   const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
   const [mesAtual, setMesAtual] = useState(hoje.getMonth());
   const [anoAtual, setAnoAtual] = useState(hoje.getFullYear());
   const [dataInicio, setDataInicio] = useState<Date | null>(null);
   const [dataFim, setDataFim] = useState<Date | null>(null);
   const [entrega, setEntrega] = useState(false);
+  const [endereco, setEndereco] = useState("");
   const [carregando, setCarregando] = useState(false);
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState(false);
 
   const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
   const diasSemana = ["D","S","T","Q","Q","S","S"];
@@ -33,6 +38,7 @@ export default function ReservaForm({ equipamentoId, precoPorDia, disponivel }: 
 
   function handleDiaClick(dia: number) {
     const data = new Date(anoAtual, mesAtual, dia);
+    data.setHours(0, 0, 0, 0);
     if (data < hoje) return;
 
     if (!dataInicio || (dataInicio && dataFim)) {
@@ -50,6 +56,7 @@ export default function ReservaForm({ equipamentoId, precoPorDia, disponivel }: 
 
   function getDiaStatus(dia: number) {
     const data = new Date(anoAtual, mesAtual, dia);
+    data.setHours(0, 0, 0, 0);
     if (data < hoje) return "disabled";
     if (dataInicio && data.toDateString() === dataInicio.toDateString()) return "selected";
     if (dataFim && data.toDateString() === dataFim.toDateString()) return "selected";
@@ -71,25 +78,47 @@ export default function ReservaForm({ equipamentoId, precoPorDia, disponivel }: 
     if (!dataInicio || !dataFim) return;
 
     setCarregando(true);
+    setErro("");
+
     const res = await fetch("/api/alugueis", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         equipamentoId,
-        dataInicio,
-        dataFim,
+        dataInicio: dataInicio.toISOString(),
+        dataFim: dataFim.toISOString(),
         entrega,
+        endereco: entrega ? endereco : undefined,
       }),
     });
 
+    const data = await res.json();
     setCarregando(false);
 
-    if (res.ok) {
-      router.push("/minha-conta");
+    if (!res.ok) {
+      setErro(data.erro || "Erro ao realizar reserva.");
+      return;
     }
+
+    setSucesso(true);
+    setTimeout(() => router.push("/minha-conta"), 2000);
   }
 
   const { primeiroDia, totalDias: totalDiasNoMes } = getDiasDoMes(mesAtual, anoAtual);
+
+  if (sucesso) {
+    return (
+      <div className="bg-white border border-gray-100 rounded-xl p-8 sticky top-20 flex flex-col items-center text-center gap-3">
+        <div className="w-14 h-14 rounded-full bg-[#E1F5EE] flex items-center justify-center mb-2">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" strokeWidth="2.5" strokeLinecap="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h3 className="text-base font-medium text-gray-800">Reserva realizada!</h3>
+        <p className="text-sm text-gray-500">Redirecionando para sua conta...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white border border-gray-100 rounded-xl p-5 sticky top-20">
@@ -175,7 +204,7 @@ export default function ReservaForm({ equipamentoId, precoPorDia, disponivel }: 
       {/* Entrega */}
       <div
         onClick={() => setEntrega(!entrega)}
-        className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer mb-4 transition-colors ${
+        className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer mb-2 transition-colors ${
           entrega ? "border-[#1D9E75] bg-[#E1F5EE]" : "border-gray-200"
         }`}
       >
@@ -194,6 +223,17 @@ export default function ReservaForm({ equipamentoId, precoPorDia, disponivel }: 
         </div>
       </div>
 
+      {/* Endereço */}
+      {entrega && (
+        <input
+          type="text"
+          value={endereco}
+          onChange={(e) => setEndereco(e.target.value)}
+          placeholder="Digite seu endereço completo"
+          className="w-full h-9 border border-gray-200 rounded-lg px-3 text-sm mb-4 focus:outline-none focus:border-[#1D9E75]"
+        />
+      )}
+
       {/* Total */}
       {totalDias > 0 && (
         <div className="border-t border-gray-100 pt-3 mb-4 space-y-1.5">
@@ -206,6 +246,11 @@ export default function ReservaForm({ equipamentoId, precoPorDia, disponivel }: 
             <span>R$ {totalPreco.toFixed(2)}</span>
           </div>
         </div>
+      )}
+
+      {/* Erro */}
+      {erro && (
+        <p className="text-xs text-red-500 mb-3 bg-red-50 px-3 py-2 rounded-lg">{erro}</p>
       )}
 
       {/* Botão */}
