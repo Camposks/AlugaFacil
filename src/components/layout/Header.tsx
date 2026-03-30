@@ -41,7 +41,7 @@ export default function Header() {
             alt="AlugaFácil"
             width={120}
             height={50}
-            className="object-contain brightness-0 invert"
+            className="object-contain"
             style={{ width: 120, height: "auto" }}
           />
         </Link>

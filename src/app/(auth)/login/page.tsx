@@ -73,12 +73,12 @@ export default function LoginPage() {
         <div className="bg-[#1D9E75] p-10 flex flex-col justify-between">
           <div>
             {/* Logo */}
-            <div className="mb-10">
+            <div className="mb-10 ml-[50%] transform -translate-x-1/2">
               <Image
                 src="/logo.png"
                 alt="AlugaFácil"
-                width={180}
-                height={80}
+                width={200}
+                height={10}
                 className="object-contain brightness-0 invert"
               />
             </div>

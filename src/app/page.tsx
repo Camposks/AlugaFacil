@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
+
 async function getEquipamentos() {
   try {
     return await prisma.equipamento.findMany({
