@@ -78,10 +78,10 @@ export default async function EquipamentosPage({ searchParams }: Props) {
       </div>
 
       {/* Barra de filtros */}
-      <div className="bg-white border-b border-gray-100 px-8 py-2.5 flex items-center gap-2 flex-wrap">
+      <div className="bg-white border-b border-gray-100 px-8 py-2.5 flex items-center justify-center gap-2 flex-wrap">
         <Link
           href={{ pathname: "/equipamentos", query: { ...params, disponivel: apenasDisponiveis ? "false" : "true", pagina: 1 } }}
-          className={`h-8 px-3 rounded-full border text-xs flex items-center gap-1.5 transition-colors ${
+          className={`h-8 px-3 rounded-full border text-xs inline-flex items-center justify-center gap-1.5 transition-colors ${
             apenasDisponiveis
               ? "bg-[#E1F5EE] border-[#1D9E75] text-[#0F6E56] font-medium"
               : "border-gray-200 text-gray-500"
@@ -99,7 +99,7 @@ export default async function EquipamentosPage({ searchParams }: Props) {
           <Link
             key={cat.id}
             href={{ pathname: "/equipamentos", query: { ...params, categoria: params.categoria === cat.nome ? undefined : cat.nome, pagina: 1 } }}
-            className={`h-8 px-3 rounded-full border text-xs transition-colors ${
+            className={`h-8 px-3 rounded-full border text-xs inline-flex items-center justify-center transition-colors ${
               params.categoria === cat.nome
                 ? "bg-[#E1F5EE] border-[#1D9E75] text-[#0F6E56] font-medium"
                 : "border-gray-200 text-gray-500 hover:border-gray-300"

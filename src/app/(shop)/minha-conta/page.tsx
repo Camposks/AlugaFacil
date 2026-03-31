@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import FormAvaliacao from "@/components/account/FormAvaliacao";
 
 const statusLabel: Record<string, { label: string; classe: string }> = {
   PENDENTE:   { label: "Pendente",    classe: "bg-yellow-50 text-yellow-700" },
@@ -26,6 +27,7 @@ export default async function MinhaContaPage() {
       equipamento: {
         include: { categoria: true },
       },
+      avaliacao: true,
     },
     orderBy: { criadoEm: "desc" },
   });
@@ -49,6 +51,16 @@ export default async function MinhaContaPage() {
           <div>
             <h1 className="text-xl font-medium text-white">{usuario?.nome}</h1>
             <p className="text-[#9FE1CB] text-sm">{usuario?.email}</p>
+            <Link
+              href="/minha-conta/editar"
+              className="h-8 px-4 bg-white/20 text-white text-xs font-medium rounded-lg flex items-center gap-1.5 hover:bg-white/30 transition-colors mt-3 w-fit"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              Editar perfil
+            </Link>
           </div>
         </div>
       </div>
@@ -142,39 +154,79 @@ export default async function MinhaContaPage() {
               Nenhum aluguel no histórico ainda
             </div>
           ) : (
-            <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gray-50 border-b border-gray-100">
-                    <th className="text-left px-5 py-3 text-xs text-gray-400 font-medium">Equipamento</th>
-                    <th className="text-left px-5 py-3 text-xs text-gray-400 font-medium">Período</th>
-                    <th className="text-left px-5 py-3 text-xs text-gray-400 font-medium">Total</th>
-                    <th className="text-left px-5 py-3 text-xs text-gray-400 font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {historico.map((al) => (
-                    <tr key={al.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                      <td className="px-5 py-3 text-sm text-gray-700">{al.equipamento.nome}</td>
-                      <td className="px-5 py-3 text-xs text-gray-500">
+            <div className="flex flex-col gap-3">
+              {historico.map((al) => (
+                <div key={al.id} className="bg-white border border-gray-100 rounded-xl p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="relative w-16 h-14 bg-gray-50 rounded-lg overflow-hidden shrink-0">
+                      {al.equipamento.imagens[0] ? (
+                        <Image
+                          src={al.equipamento.imagens[0]}
+                          alt={al.equipamento.nome}
+                          fill
+                          className="object-contain p-1"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <svg className="w-6 h-6 stroke-gray-300" viewBox="0 0 24 24" fill="none" strokeWidth="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5">
+                        {al.equipamento.categoria.nome}
+                      </div>
+                      <div className="text-sm font-medium text-gray-800">
+                        {al.equipamento.nome}
+                      </div>
+                      <div className="text-xs text-gray-400 mt-0.5">
                         {new Date(al.dataInicio).toLocaleDateString("pt-BR")} —{" "}
                         {new Date(al.dataFim).toLocaleDateString("pt-BR")}
-                      </td>
-                      <td className="px-5 py-3 text-sm text-gray-700">
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-1.5">
+                      <span className={`h-5 px-2 rounded-full text-[10px] font-medium inline-flex items-center ${statusLabel[al.status]?.classe}`}>
+                        {statusLabel[al.status]?.label}
+                      </span>
+                      <span className="text-sm font-medium text-gray-700">
                         R$ {al.precoTotal.toFixed(2)}
-                      </td>
-                      <td className="px-5 py-3">
-                        <span className={`h-5 px-2 rounded-full text-[10px] font-medium inline-flex items-center ${statusLabel[al.status]?.classe}`}>
-                          {statusLabel[al.status]?.label}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Avaliação */}
+                  {al.status === "DEVOLVIDO" && (
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      {al.avaliacao ? (
+                        <div className="flex items-center gap-2">
+                          <div className="flex gap-0.5">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <svg key={s} width="14" height="14" viewBox="0 0 24 24" fill={s <= al.avaliacao!.nota ? "#1D9E75" : "#e5e7eb"}>
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                              </svg>
+                            ))}
+                          </div>
+                          <span className="text-xs text-gray-400">Avaliado</span>
+                        </div>
+                      ) : (
+                        <FormAvaliacao
+                          aluguelId={al.id}
+                          equipamentoId={al.equipamentoId}
+                          equipamentoNome={al.equipamento.nome}
+                        />
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>
+
       </div>
     </div>
   );

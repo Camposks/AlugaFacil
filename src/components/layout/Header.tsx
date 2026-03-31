@@ -104,18 +104,19 @@ export default function Header() {
       {/* Menu de categorias */}
       <nav className="border-t border-gray-100 px-8 flex items-center justify-center h-10 gap-0 overflow-x-auto scrollbar-hide">
         {categorias.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setCategoriaAtiva(cat)}
-            className={`px-4 h-full text-sm whitespace-nowrap border-b-2 transition-all ${
-              categoriaAtiva === cat
-                ? "border-[#1D9E75] text-[#1D9E75] font-medium"
-                : "border-transparent text-gray-400 hover:text-gray-600"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
+        <Link
+          key={cat}
+          href={cat === "Todos" ? "/equipamentos" : `/equipamentos?categoria=${cat}`}
+          className={`px-4 h-full text-sm whitespace-nowrap border-b-2 transition-all flex items-center ${
+            categoriaAtiva === cat
+              ? "border-[#1D9E75] text-[#1D9E75] font-medium"
+              : "border-transparent text-gray-400 hover:text-gray-600"
+          }`}
+          onClick={() => setCategoriaAtiva(cat)}
+        >
+          {cat}
+        </Link>
+      ))}
         <Link
           href="/equipamentos"
           className="px-4 h-full text-sm whitespace-nowrap border-b-2 border-transparent text-gray-400 hover:text-[#1D9E75] flex items-center transition-all"
