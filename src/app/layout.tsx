@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import AuthSessionProvider from "@/components/providers/SessionProvider";
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "AlugaFácil",
@@ -19,6 +20,7 @@ export default function RootLayout({
         <AuthSessionProvider>
           <Header />
           <main>{children}</main>
+          <Footer />
         </AuthSessionProvider>
       </body>
     </html>

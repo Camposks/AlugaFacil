@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   if (!session || session.user.perfil !== "ADMIN") {
@@ -15,8 +15,9 @@ export async function PUT(
     const body = await request.json();
     const { nome, descricao, categoriaId, precoPorDia, estoque, disponivel, imagens } = body;
 
+    const { id } = await params;
     const equipamento = await prisma.equipamento.update({
-      where: { id: params.id },
+    where: { id },
       data: { nome, descricao, categoriaId, precoPorDia, estoque, disponivel, imagens },
     });
 
@@ -28,7 +29,7 @@ export async function PUT(
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   if (!session || session.user.perfil !== "ADMIN") {
@@ -36,7 +37,8 @@ export async function DELETE(
   }
 
   try {
-    await prisma.equipamento.delete({ where: { id: params.id } });
+    const { id } = await params;
+    await prisma.equipamento.delete({ where: { id } });
     return NextResponse.json({ mensagem: "Deletado com sucesso" });
   } catch {
     return NextResponse.json({ erro: "Erro interno" }, { status: 500 });
