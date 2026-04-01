@@ -35,7 +35,7 @@ export default async function DetalhesEquipamento({ params }: Props) {
 
   const mediaAvaliacao =
     equipamento.avaliacoes.length > 0
-      ? equipamento.avaliacoes.reduce((acc: number, a) => acc + a.nota, 0) /
+      ? equipamento.avaliacoes.reduce((acc: number, a: { nota: number }) => acc + a.nota, 0) /
         equipamento.avaliacoes.length
       : 0;
 
