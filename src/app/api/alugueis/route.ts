@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { z } from "zod";
+import { enviarEmailConfirmacaoReserva } from "@/lib/email";
 
 const aluguelSchema = z.object({
   equipamentoId: z.string(),
@@ -49,7 +50,6 @@ export async function POST(request: Request) {
 
     const precoTotal = dias * equipamento.precoPorDia;
 
-    // Verifica conflito de datas
     const conflito = await prisma.aluguel.findFirst({
       where: {
         equipamentoId,
@@ -79,6 +79,16 @@ export async function POST(request: Request) {
         status: "PENDENTE",
       },
     });
+
+    await enviarEmailConfirmacaoReserva({
+      nome: session.user.name!,
+      email: session.user.email!,
+      equipamento: equipamento.nome,
+      dataInicio: inicio,
+      dataFim: fim,
+      total: precoTotal,
+      entrega,
+    }).catch(() => {});
 
     return NextResponse.json(aluguel, { status: 201 });
   } catch {

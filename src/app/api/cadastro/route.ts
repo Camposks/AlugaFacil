@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hash } from "bcryptjs";
 import { z } from "zod";
+import { enviarEmailBoasVindas } from "@/lib/email";
 
 const cadastroSchema = z.object({
   nome: z.string().min(2),
@@ -40,6 +41,8 @@ export async function POST(request: Request) {
     const usuario = await prisma.usuario.create({
       data: { nome, email, senha: senhaHash, telefone },
     });
+
+    await enviarEmailBoasVindas(usuario.nome, usuario.email).catch(() => {});
 
     return NextResponse.json(
       { mensagem: "Usuário criado com sucesso", id: usuario.id },

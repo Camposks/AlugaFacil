@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import Image from "next/image";
+import BotaoLogout from "./BotaoLogout";
 
 const categorias = [
   "Todos",
@@ -80,6 +81,7 @@ export default function Header() {
 
           {/* Login ou conta */}
           {session ? (
+          <div className="flex items-center gap-2">
             <Link
               href="/minha-conta"
               className="h-9 px-4 bg-[#1D9E75] text-white text-sm font-medium rounded-lg flex items-center gap-2 hover:bg-[#0F6E56] transition-colors"
@@ -90,14 +92,16 @@ export default function Header() {
               </svg>
               {session.user?.name?.split(" ")[0]}
             </Link>
-          ) : (
-            <Link
-              href="/login"
-              className="h-9 px-4 bg-[#1D9E75] text-white text-sm font-medium rounded-lg flex items-center hover:bg-[#0F6E56] transition-colors"
-            >
-              Entrar
-            </Link>
-          )}
+            <BotaoLogout />
+          </div>
+        ) : (
+          <Link
+            href="/login"
+            className="h-9 px-4 bg-[#1D9E75] text-white text-sm font-medium rounded-lg flex items-center hover:bg-[#0F6E56] transition-colors"
+          >
+            Entrar
+          </Link>
+        )}
         </div>
       </div>
 
