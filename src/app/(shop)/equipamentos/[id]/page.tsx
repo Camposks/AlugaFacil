@@ -87,7 +87,7 @@ function tempoRelativo(data: Date) {
             </div>
             {equipamento.imagens.length > 1 && (
               <div className="flex gap-2 p-3">
-                {equipamento.imagens.map((img, i) => (
+                {equipamento.imagens.map((img: string, i: number) => (
                   <div key={i} className="relative w-16 h-12 rounded-lg overflow-hidden border border-gray-200 cursor-pointer">
                     <Image src={img} alt="" fill className="object-cover" />
                   </div>
