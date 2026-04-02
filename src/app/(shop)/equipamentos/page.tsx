@@ -72,7 +72,7 @@ export default async function EquipamentosPage({ searchParams }: Props) {
           Mais de 500 máquinas, ferramentas e equipamentos disponíveis para alugar
         </p>
         <FiltrosEquipamentos
-          categorias={categorias.map((c) => c.nome)}
+          categorias={categorias.map((c: { id: string; nome: string }) => c.nome)}
           searchParams={params}
         />
       </div>
