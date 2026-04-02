@@ -3,6 +3,15 @@ import { prisma } from "@/lib/prisma";
 import FiltrosEquipamentos from "@/components/equipment/FiltrosEquipamentos";
 import Image from "next/image";
 
+interface EquipamentoItem {
+  id: string;
+  nome: string;
+  precoPorDia: number;
+  imagens: string[];
+  disponivel: boolean;
+  categoria: { nome: string };
+}
+
 interface Props {
   searchParams: Promise<{
     busca?: string;
@@ -147,7 +156,7 @@ export default async function EquipamentosPage({ searchParams }: Props) {
         </div>
       ) : (
         <div className="grid grid-cols-4 gap-4 px-8 pb-6">
-          {equipamentos.map((eq) => (
+          {equipamentos.map((eq: EquipamentoItem) => (
             <div key={eq.id} className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
               <div className="relative h-36 bg-gray-50 flex items-center justify-center">
                 {eq.imagens[0] ? (
