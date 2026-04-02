@@ -7,6 +7,12 @@ import Image from "next/image";
 interface Props {
   params: Promise<{ id: string }>;
 }
+interface EquipamentoRelacionado {
+  id: string;
+  nome: string;
+  precoPorDia: number;
+  imagens: string[];
+}
 
 export default async function DetalhesEquipamento({ params }: Props) {
   const { id } = await params;
@@ -175,7 +181,7 @@ function tempoRelativo(data: Date) {
                 Equipamentos relacionados
               </h2>
               <div className="grid grid-cols-3 gap-3">
-                {relacionados.map((rel) => (
+                {relacionados.map((rel: EquipamentoRelacionado) => (
                   <Link
                     key={rel.id}
                     href={`/equipamentos/${rel.id}`}
