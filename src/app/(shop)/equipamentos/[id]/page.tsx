@@ -6,6 +6,11 @@ import Image from "next/image";
 
 interface Props {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{
+    dataInicio?: string;
+    dataFim?: string;
+    entrega?: string;
+  }>;
 }
 interface EquipamentoRelacionado {
   id: string;
@@ -14,8 +19,9 @@ interface EquipamentoRelacionado {
   imagens: string[];
 }
 
-export default async function DetalhesEquipamento({ params }: Props) {
+export default async function DetalhesEquipamento({ params, searchParams }: Props) {
   const { id } = await params;
+  const sp = await searchParams;
   const equipamento = await prisma.equipamento.findUnique({
     where: { id },
     include: {
@@ -215,6 +221,9 @@ function tempoRelativo(data: Date) {
             equipamentoId={equipamento.id}
             precoPorDia={equipamento.precoPorDia}
             disponivel={equipamento.disponivel}
+            dataInicioInicial={sp.dataInicio ? new Date(sp.dataInicio) : null}
+            dataFimInicial={sp.dataFim ? new Date(sp.dataFim) : null}
+            entregaInicial={sp.entrega === "true"}
           />
         </div>
       </div>

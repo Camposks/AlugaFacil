@@ -8,20 +8,30 @@ interface Props {
   equipamentoId: string;
   precoPorDia: number;
   disponivel: boolean;
+  dataInicioInicial?: Date | null;
+  dataFimInicial?: Date | null;
+  entregaInicial?: boolean;
 }
 
-export default function ReservaForm({ equipamentoId, precoPorDia, disponivel }: Props) {
+export default function ReservaForm({
+  equipamentoId,
+  precoPorDia,
+  disponivel,
+  dataInicioInicial = null,
+  dataFimInicial = null,
+  entregaInicial = false,
+}: Props) {
   const { data: session } = useSession();
   const router = useRouter();
 
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
 
-  const [mesAtual, setMesAtual] = useState(hoje.getMonth());
-  const [anoAtual, setAnoAtual] = useState(hoje.getFullYear());
-  const [dataInicio, setDataInicio] = useState<Date | null>(null);
-  const [dataFim, setDataFim] = useState<Date | null>(null);
-  const [entrega, setEntrega] = useState(false);
+  const [mesAtual, setMesAtual] = useState(dataInicioInicial?.getMonth() ?? hoje.getMonth());
+  const [anoAtual, setAnoAtual] = useState(dataInicioInicial?.getFullYear() ?? hoje.getFullYear());
+  const [dataInicio, setDataInicio] = useState<Date | null>(dataInicioInicial);
+  const [dataFim, setDataFim] = useState<Date | null>(dataFimInicial);
+  const [entrega, setEntrega] = useState(entregaInicial);
   const [endereco, setEndereco] = useState("");
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
@@ -72,8 +82,13 @@ export default function ReservaForm({ equipamentoId, precoPorDia, disponivel }: 
 
   async function handleReserva() {
     if (!session) {
-      const url = window.location.href;
-      router.push(`/login?callbackUrl=${encodeURIComponent(url)}`);
+      const params = new URLSearchParams();
+      params.set("dataInicio", dataInicio.toISOString());
+      params.set("dataFim", dataFim.toISOString());
+      params.set("entrega", String(entrega));
+      
+      const equipamentoUrl = window.location.pathname + "?" + params.toString();
+      router.push(`/login?callbackUrl=${encodeURIComponent(equipamentoUrl)}`);
       return;
     }
     if (!dataInicio || !dataFim) return;
