@@ -95,7 +95,7 @@ export default async function EquipamentosPage({ searchParams }: Props) {
           Disponíveis
         </Link>
 
-        {categorias.map((cat) => (
+        {categorias.map((cat: { id: string; nome: string }) => (
           <Link
             key={cat.id}
             href={{ pathname: "/equipamentos", query: { ...params, categoria: params.categoria === cat.nome ? undefined : cat.nome, pagina: 1 } }}
