@@ -102,7 +102,7 @@ export default async function MinhaContaPage() {
           <div>
             <h2 className="text-base font-medium text-gray-800 mb-3">Aluguéis ativos</h2>
             <div className="flex flex-col gap-3">
-              {ativos.map((al) => (
+              {ativos.map((al: AluguelItem) => (
                 <div key={al.id} className="bg-white border border-gray-100 rounded-xl p-4 flex items-center gap-4">
                   <div className="relative w-20 h-16 bg-gray-50 rounded-lg overflow-hidden shrink-0">
                     {al.equipamento.imagens[0] ? (
@@ -171,7 +171,7 @@ export default async function MinhaContaPage() {
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              {historico.map((al) => (
+              {historico.map((al: AluguelItem) => (
                 <div key={al.id} className="bg-white border border-gray-100 rounded-xl p-4">
                   <div className="flex items-center gap-4">
                     <div className="relative w-16 h-14 bg-gray-50 rounded-lg overflow-hidden shrink-0">
