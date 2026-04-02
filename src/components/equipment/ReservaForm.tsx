@@ -72,7 +72,8 @@ export default function ReservaForm({ equipamentoId, precoPorDia, disponivel }: 
 
   async function handleReserva() {
     if (!session) {
-      router.push("/login");
+      const url = window.location.href;
+      router.push(`/login?callbackUrl=${encodeURIComponent(url)}`);
       return;
     }
     if (!dataInicio || !dataFim) return;

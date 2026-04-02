@@ -3,13 +3,18 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import Image from "next/image";
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const [aba, setAba] = useState<"login" | "cadastro">("login");
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
+
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const [loginForm, setLoginForm] = useState({ email: "", senha: "" });
   const [cadastroForm, setCadastroForm] = useState({
@@ -32,7 +37,7 @@ export default function LoginPage() {
     if (res?.error) {
       setErro("E-mail ou senha incorretos.");
     } else {
-      router.push("/");
+      router.push(callbackUrl);
     }
   }
 
@@ -61,7 +66,7 @@ export default function LoginPage() {
       redirect: false,
     });
 
-    router.push("/");
+    router.push(callbackUrl);
     setCarregando(false);
   }
 
@@ -242,5 +247,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginPageContent />
+    </Suspense>
   );
 }
