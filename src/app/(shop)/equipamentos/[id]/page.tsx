@@ -135,7 +135,7 @@ function tempoRelativo(data: Date) {
                 Avaliações dos clientes
               </h2>
               <div className="flex flex-col divide-y divide-gray-100">
-                {equipamento.avaliacoes.map((av) => (
+                {equipamento.avaliacoes.map((av: { id: string; usuario: { nome: string }; criadoEm: Date; nota: number; comentario: string | null }) => (
                   <div key={av.id} className="py-4 first:pt-0 last:pb-0">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
