@@ -88,7 +88,7 @@ export default async function MinhaContaPage() {
           {[
             { label: "Total de aluguéis", valor: alugueis.length },
             { label: "Aluguéis ativos", valor: ativos.length },
-            { label: "Concluídos", valor: historico.filter((a) => a.status === "DEVOLVIDO").length },
+            { label: "Concluídos", valor: historico.filter((a: AluguelItem) => a.status === "DEVOLVIDO").length },
           ].map((m) => (
             <div key={m.label} className="bg-white border border-gray-100 rounded-xl p-4">
               <div className="text-xs text-gray-400 mb-1">{m.label}</div>
