@@ -5,6 +5,22 @@ import Link from "next/link";
 import Image from "next/image";
 import FormAvaliacao from "@/components/account/FormAvaliacao";
 
+interface AluguelItem {
+  id: string;
+  status: string;
+  dataInicio: Date;
+  dataFim: Date;
+  precoTotal: number;
+  entrega: boolean;
+  equipamentoId: string;
+  equipamento: {
+    nome: string;
+    imagens: string[];
+    categoria: { nome: string };
+  };
+  avaliacao: { nota: number } | null;
+}
+
 const statusLabel: Record<string, { label: string; classe: string }> = {
   PENDENTE:   { label: "Pendente",    classe: "bg-yellow-50 text-yellow-700" },
   CONFIRMADO: { label: "Confirmado",  classe: "bg-[#E1F5EE] text-[#0F6E56]" },
@@ -32,10 +48,10 @@ export default async function MinhaContaPage() {
     orderBy: { criadoEm: "desc" },
   });
 
-  const ativos = alugueis.filter((a) =>
+  const ativos = alugueis.filter((a: AluguelItem) =>
     ["PENDENTE", "CONFIRMADO", "ATIVO"].includes(a.status)
   );
-  const historico = alugueis.filter((a) =>
+  const historico = alugueis.filter((a: AluguelItem) =>
     ["DEVOLVIDO", "CANCELADO"].includes(a.status)
   );
 
