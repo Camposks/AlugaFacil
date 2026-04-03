@@ -5,7 +5,7 @@ import { signOut } from "next-auth/react";
 export default function BotaoLogout() {
   return (
     <button
-      onClick={() => signOut({ callbackUrl: "/" })}
+      onClick={() => signOut({ callbackUrl: window.location.origin })}
       className="flex items-center gap-2 text-sm text-gray-500 hover:text-red-500 transition-colors"
     >
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
