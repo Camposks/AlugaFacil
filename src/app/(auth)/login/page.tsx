@@ -6,13 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import Image from "next/image";
-import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Entrar ou Criar conta",
-  description: "Faça login ou crie sua conta para alugar equipamentos no AlugaFácil.",
-  robots: { index: false, follow: false },
-};
 
 function LoginPageContent() {
   const router = useRouter();
