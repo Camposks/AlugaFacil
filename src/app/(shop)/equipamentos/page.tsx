@@ -2,6 +2,13 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import FiltrosEquipamentos from "@/components/equipment/FiltrosEquipamentos";
 import Image from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Catálogo de Equipamentos",
+  description:
+    "Explore nosso catálogo completo de máquinas, ferramentas e equipamentos para alugar. Filtre por categoria e preço.",
+};
 
 interface EquipamentoItem {
   id: string;

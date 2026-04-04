@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Alugue Máquinas e Ferramentas para sua Obra",
+  description:
+    "Encontre mais de 500 equipamentos disponíveis para alugar. Entrega em até 24h ou retirada na loja. Simples, rápido e seguro.",
+};
 
 async function getEquipamentos() {
   try {

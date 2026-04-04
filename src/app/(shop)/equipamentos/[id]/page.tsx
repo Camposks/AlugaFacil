@@ -3,6 +3,29 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import ReservaForm from "@/components/equipment/ReservaForm";
 import Image from "next/image";
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const equipamento = await prisma.equipamento.findUnique({
+    where: { id },
+    include: { categoria: true },
+  });
+
+  if (!equipamento) {
+    return { title: "Equipamento não encontrado" };
+  }
+
+  return {
+    title: equipamento.nome,
+    description: `Alugue ${equipamento.nome} por R$ ${equipamento.precoPorDia.toFixed(2)}/dia. ${equipamento.descricao}`,
+    openGraph: {
+      title: equipamento.nome,
+      description: `Alugue ${equipamento.nome} por R$ ${equipamento.precoPorDia.toFixed(2)}/dia.`,
+      images: equipamento.imagens[0] ? [{ url: equipamento.imagens[0] }] : [],
+    },
+  };
+}
 
 interface Props {
   params: Promise<{ id: string }>;

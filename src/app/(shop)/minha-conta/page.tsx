@@ -4,6 +4,13 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import FormAvaliacao from "@/components/account/FormAvaliacao";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Minha Conta",
+  description: "Gerencie seus aluguéis, avaliações e dados pessoais.",
+  robots: { index: false, follow: false },
+};
 
 interface AluguelItem {
   id: string;
