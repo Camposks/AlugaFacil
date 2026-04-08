@@ -242,6 +242,8 @@ function tempoRelativo(data: Date) {
         <div>
           <ReservaForm
             equipamentoId={equipamento.id}
+            equipamentoNome={equipamento.nome}
+            equipamentoImagem={equipamento.imagens[0] || ""}
             precoPorDia={equipamento.precoPorDia}
             disponivel={equipamento.disponivel}
             dataInicioInicial={sp.dataInicio ? new Date(sp.dataInicio) : null}

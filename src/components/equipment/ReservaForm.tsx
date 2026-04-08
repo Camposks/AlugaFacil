@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useCarrinho } from "@/contexts/CarrinhoContext";
 
 interface Props {
   equipamentoId: string;
+  equipamentoNome: string;
+  equipamentoImagem: string;
   precoPorDia: number;
   disponivel: boolean;
   dataInicioInicial?: Date | null;
@@ -15,6 +18,8 @@ interface Props {
 
 export default function ReservaForm({
   equipamentoId,
+  equipamentoNome,
+  equipamentoImagem,
   precoPorDia,
   disponivel,
   dataInicioInicial = null,
@@ -23,6 +28,7 @@ export default function ReservaForm({
 }: Props) {
   const { data: session } = useSession();
   const router = useRouter();
+  const { adicionarItem } = useCarrinho();
 
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
@@ -33,9 +39,6 @@ export default function ReservaForm({
   const [dataFim, setDataFim] = useState<Date | null>(dataFimInicial);
   const [entrega, setEntrega] = useState(entregaInicial);
   const [endereco, setEndereco] = useState("");
-  const [carregando, setCarregando] = useState(false);
-  const [erro, setErro] = useState("");
-  const [sucesso, setSucesso] = useState(false);
 
   const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
   const diasSemana = ["D","S","T","Q","Q","S","S"];
@@ -80,61 +83,35 @@ export default function ReservaForm({
 
   const totalPreco = totalDias * precoPorDia;
 
-  async function handleReserva() {
+  function handleReserva() {
     if (!session) {
       const params = new URLSearchParams();
-      params.set("dataInicio", dataInicio.toISOString());
-      params.set("dataFim", dataFim.toISOString());
+      if (dataInicio) params.set("dataInicio", dataInicio.toISOString());
+      if (dataFim) params.set("dataFim", dataFim.toISOString());
       params.set("entrega", String(entrega));
-      
       const equipamentoUrl = window.location.pathname + "?" + params.toString();
       router.push(`/login?callbackUrl=${encodeURIComponent(equipamentoUrl)}`);
       return;
     }
+
     if (!dataInicio || !dataFim) return;
 
-    setCarregando(true);
-    setErro("");
-
-    const res = await fetch("/api/alugueis", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        equipamentoId,
-        dataInicio: dataInicio.toISOString(),
-        dataFim: dataFim.toISOString(),
-        entrega,
-        endereco: entrega ? endereco : undefined,
-      }),
+    adicionarItem({
+      equipamentoId,
+      nome: equipamentoNome,
+      imagem: equipamentoImagem,
+      precoPorDia,
+      dataInicio,
+      dataFim,
+      entrega,
+      totalDias,
+      precoTotal: totalPreco,
     });
 
-    const data = await res.json();
-    setCarregando(false);
-
-    if (!res.ok) {
-      setErro(data.erro || "Erro ao realizar reserva.");
-      return;
-    }
-
-    setSucesso(true);
-    setTimeout(() => router.push("/minha-conta"), 2000);
+    router.push("/carrinho");
   }
 
   const { primeiroDia, totalDias: totalDiasNoMes } = getDiasDoMes(mesAtual, anoAtual);
-
-  if (sucesso) {
-    return (
-      <div className="bg-white border border-gray-100 rounded-xl p-8 sticky top-20 flex flex-col items-center text-center gap-3">
-        <div className="w-14 h-14 rounded-full bg-[#E1F5EE] flex items-center justify-center mb-2">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" strokeWidth="2.5" strokeLinecap="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-        </div>
-        <h3 className="text-base font-medium text-gray-800">Reserva realizada!</h3>
-        <p className="text-sm text-gray-500">Redirecionando para sua conta...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white border border-gray-100 rounded-xl p-5 sticky top-20">
@@ -264,22 +241,16 @@ export default function ReservaForm({
         </div>
       )}
 
-      {/* Erro */}
-      {erro && (
-        <p className="text-xs text-red-500 mb-3 bg-red-50 px-3 py-2 rounded-lg">{erro}</p>
-      )}
-
       {/* Botão */}
       <button
         onClick={handleReserva}
-        disabled={!disponivel || !dataInicio || !dataFim || carregando}
+        disabled={!disponivel || !dataInicio || !dataFim}
         className="w-full h-10 bg-[#1D9E75] text-white text-sm font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#0F6E56] transition-colors"
       >
         {!disponivel ? "Indisponível" :
-         carregando ? "Processando..." :
          !session ? "Entrar para reservar" :
          !dataInicio || !dataFim ? "Selecione as datas" :
-         "Reservar agora"}
+         "Adicionar ao carrinho"}
       </button>
     </div>
   );

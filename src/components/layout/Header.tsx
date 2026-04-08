@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import Image from "next/image";
 import BotaoLogout from "./BotaoLogout";
+import { useCarrinho } from "@/contexts/CarrinhoContext";
 
 const categorias = [
   "Todos",
@@ -19,6 +20,7 @@ const categorias = [
 
 export default function Header() {
   const router = useRouter();
+  const { totalItens } = useCarrinho();
   const { data: session } = useSession();
   const [categoriaAtiva, setCategoriaAtiva] = useState("Todos");
   const [busca, setBusca] = useState("");
@@ -74,9 +76,11 @@ export default function Header() {
               <circle cx="20" cy="21" r="1"/>
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
             </svg>
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#1D9E75] text-white text-[9px] font-medium rounded-full flex items-center justify-center">
-              0
-            </span>
+            {totalItens > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#1D9E75] text-white text-[9px] font-medium rounded-full flex items-center justify-center">
+                {totalItens}
+              </span>
+            )}
           </Link>
 
           {/* Login ou conta */}

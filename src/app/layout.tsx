@@ -3,6 +3,7 @@ import "./globals.css";
 import AuthSessionProvider from "@/components/providers/SessionProvider";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { CarrinhoProvider } from "@/contexts/CarrinhoContext";
 
 export const metadata: Metadata = {
   title: {
@@ -51,9 +52,11 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body>
         <AuthSessionProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
+          <CarrinhoProvider>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </CarrinhoProvider>
         </AuthSessionProvider>
       </body>
     </html>
