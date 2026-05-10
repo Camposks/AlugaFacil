@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface Categoria {
   id: string;
@@ -25,6 +26,7 @@ interface Props {
 export default function FormEquipamento({ categorias, equipamento }: Props) {
   const router = useRouter();
   const [carregando, setCarregando] = useState(false);
+  const [uploadando, setUploadando] = useState(false);
   const [erro, setErro] = useState("");
 
   const [form, setForm] = useState({
@@ -34,8 +36,47 @@ export default function FormEquipamento({ categorias, equipamento }: Props) {
     precoPorDia: equipamento?.precoPorDia || "",
     estoque: equipamento?.estoque || 1,
     disponivel: equipamento?.disponivel ?? true,
-    imagens: equipamento?.imagens.join(", ") || "",
   });
+
+  const [imagens, setImagens] = useState<string[]>(equipamento?.imagens || []);
+
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadando(true);
+    setErro("");
+
+    const novasUrls: string[] = [];
+
+    for (const file of Array.from(files)) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErro(data.erro || "Erro ao fazer upload.");
+        setUploadando(false);
+        return;
+      }
+
+      novasUrls.push(data.url);
+    }
+
+    setImagens((prev) => [...prev, ...novasUrls]);
+    setUploadando(false);
+    e.target.value = "";
+  }
+
+  function removerImagem(url: string) {
+    setImagens((prev) => prev.filter((img) => img !== url));
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -46,9 +87,7 @@ export default function FormEquipamento({ categorias, equipamento }: Props) {
       ...form,
       precoPorDia: Number(form.precoPorDia),
       estoque: Number(form.estoque),
-      imagens: form.imagens
-        ? form.imagens.split(",").map((i) => i.trim()).filter(Boolean)
-        : [],
+      imagens,
     };
 
     const url = equipamento
@@ -74,6 +113,7 @@ export default function FormEquipamento({ categorias, equipamento }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white border border-gray-100 rounded-xl p-6 flex flex-col gap-4">
+
       <div>
         <label className="text-xs text-gray-500 block mb-1">Nome</label>
         <input
@@ -147,9 +187,7 @@ export default function FormEquipamento({ categorias, equipamento }: Props) {
           <div
             onClick={() => setForm({ ...form, disponivel: !form.disponivel })}
             className={`h-10 rounded-lg border px-3 flex items-center gap-2 cursor-pointer transition-colors ${
-              form.disponivel
-                ? "bg-[#E1F5EE] border-[#1D9E75]"
-                : "bg-gray-50 border-gray-200"
+              form.disponivel ? "bg-[#E1F5EE] border-[#1D9E75]" : "bg-gray-50 border-gray-200"
             }`}
           >
             <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
@@ -168,17 +206,67 @@ export default function FormEquipamento({ categorias, equipamento }: Props) {
         </div>
       </div>
 
+      {/* Upload de imagens */}
       <div>
-        <label className="text-xs text-gray-500 block mb-1">
-          URLs das imagens <span className="text-gray-400">(separadas por vírgula)</span>
+        <label className="text-xs text-gray-500 block mb-2">Imagens</label>
+
+        {/* Preview das imagens */}
+        {imagens.length > 0 && (
+          <div className="grid grid-cols-4 gap-2 mb-3">
+            {imagens.map((url, i) => (
+              <div key={i} className="relative group">
+                <div className="relative h-20 bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
+                  <Image
+                    src={url}
+                    alt={`Imagem ${i + 1}`}
+                    fill
+                    className="object-contain p-1"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removerImagem(url)}
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Área de upload */}
+        <label className={`flex flex-col items-center justify-center h-24 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+          uploadando ? "border-[#1D9E75] bg-[#E1F5EE]" : "border-gray-200 hover:border-[#1D9E75] hover:bg-gray-50"
+        }`}>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleUpload}
+            className="hidden"
+            disabled={uploadando}
+          />
+          {uploadando ? (
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-6 h-6 border-2 border-[#1D9E75] border-t-transparent rounded-full animate-spin" />
+              <span className="text-xs text-[#1D9E75]">Fazendo upload...</span>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-1">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <span className="text-xs text-gray-400">Clique para enviar imagens</span>
+              <span className="text-[10px] text-gray-300">PNG, JPG, WEBP — múltiplos arquivos</span>
+            </div>
+          )}
         </label>
-        <input
-          type="text"
-          value={form.imagens}
-          onChange={(e) => setForm({ ...form, imagens: e.target.value })}
-          placeholder="https://exemplo.com/img1.jpg, https://exemplo.com/img2.jpg"
-          className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm focus:outline-none focus:border-[#1D9E75]"
-        />
       </div>
 
       {erro && <p className="text-sm text-red-500">{erro}</p>}
@@ -193,7 +281,7 @@ export default function FormEquipamento({ categorias, equipamento }: Props) {
         </button>
         <button
           type="submit"
-          disabled={carregando}
+          disabled={carregando || uploadando}
           className="h-10 px-6 bg-[#1D9E75] text-white text-sm font-medium rounded-lg disabled:opacity-60 hover:bg-[#0F6E56] transition-colors"
         >
           {carregando ? "Salvando..." : equipamento ? "Salvar alterações" : "Cadastrar equipamento"}
