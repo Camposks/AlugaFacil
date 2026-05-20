@@ -18,7 +18,7 @@ WORKDIR /app
 
 # Copia arquivos de dependências e os arquivos de configuração do Prisma
 # para permitir postinstall e geração do client durante npm ci.
-COPY package.json package-lock.json prisma/schema.prisma prisma.config.ts ./
+COPY package.json package-lock.json prisma prisma.config.ts ./
 
 ARG DATABASE_URL=postgresql://dummy:dummy@dummy:5432/dummy
 ENV DATABASE_URL=$DATABASE_URL
