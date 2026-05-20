@@ -23,8 +23,10 @@ COPY package.json package-lock.json prisma prisma.config.ts ./
 ARG DATABASE_URL=postgresql://dummy:dummy@dummy:5432/dummy
 ENV DATABASE_URL=$DATABASE_URL
 
-# Instala todas as dependências, incluindo scripts pós-instalação do Prisma
-RUN npm ci
+# Instala todas as dependências, mas IGNORA scripts (evita rodar `prisma generate` aqui)
+# O Prisma Client será gerado explicitamente no stage `builder` onde todo o código
+# fonte (incluindo `prisma/schema.prisma`) já foi copiado.
+RUN npm ci --ignore-scripts
 
 
 # =============================================================================
