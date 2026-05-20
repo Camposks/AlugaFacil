@@ -4,19 +4,8 @@ import { MetadataRoute } from "next";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXTAUTH_URL || "https://aluga-facil-alpha.vercel.app";
 
-  const equipamentos = await prisma.equipamento.findMany({
-    where: { disponivel: true },
-    select: { id: true, criadoEm: true },
-  });
-
-  const equipamentosUrls = equipamentos.map((eq) => ({
-    url: `${baseUrl}/equipamentos/${eq.id}`,
-    lastModified: eq.criadoEm,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
-
-  return [
+  // URLs estáticas (sempre incluídas)
+  const staticUrls: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -29,6 +18,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.9,
     },
-    ...equipamentosUrls,
   ];
+
+  try {
+    // Tenta buscar equipamentos do banco
+    // Se falhar (durante build ou sem banco), retorna apenas URLs estáticas
+    const equipamentos = await prisma.equipamento.findMany({
+      where: { disponivel: true },
+      select: { id: true, criadoEm: true },
+    });
+
+    const equipamentosUrls = equipamentos.map((eq) => ({
+      url: `${baseUrl}/equipamentos/${eq.id}`,
+      lastModified: eq.criadoEm,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+
+    return [...staticUrls, ...equipamentosUrls];
+  } catch (error) {
+    // Durante build ou sem conexão ao banco, retorna apenas URLs estáticas
+    console.warn("⚠️ Sitemap: Database connection failed, using static URLs only");
+    return staticUrls;
+  }
 }

@@ -1,0 +1,131 @@
+# =============================================================================
+# docker-compose.prod.yml — Ambiente de PRODUÇÃO
+# Build otimizado, sem volumes de hot reload
+# Três serviços: frontend (Nginx), backend (Next.js), database (PostgreSQL)
+# =============================================================================
+
+services:
+
+  # ─── Backend (Next.js standalone) ──────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner   # Usa o stage final (produção)
+      args:
+        NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
+        NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+        DATABASE_URL: ${DATABASE_URL:-postgresql://dummy:dummy@dummy:5432/dummy}
+        RESEND_API_KEY: ${RESEND_API_KEY:-dummy}
+        AUTH_SECRET: ${AUTH_SECRET:-dummy}
+        CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-dummy}
+        CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-dummy}
+    
+    # Não expõe porta para o host (apenas para frontend via rede interna)
+    expose:
+      - "3000"
+    
+    # ─── Variáveis de ambiente de produção ────────────────────────────────────
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-alugafacil}
+      - AUTH_SECRET=${AUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
+      - NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=${NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+    
+    # Aguarda o banco estar saudável
+    depends_on:
+      db:
+        condition: service_healthy
+    
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "./scripts/healthcheck.sh", "http://localhost:3000", "/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    restart: always
+    
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    
+    networks:
+      - alugafacil-network
+
+  # ─── Frontend (Nginx reverse proxy) ───────────────────────────────────────
+  frontend:
+    image: nginx:1.25-alpine
+    depends_on:
+      app:
+        condition: service_healthy
+    
+    ports:
+      - "80:80"
+      - "443:443"
+    
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./public:/usr/share/nginx/html:ro
+      # Descomente para HTTPS/SSL:
+      # - ./nginx/certs/:/etc/nginx/certs/:ro
+    
+    restart: always
+    
+    networks:
+      - alugafacil-network
+
+  # ─── Banco de dados PostgreSQL ────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-alugafacil}
+    
+    # Não expõe porta para o host (apenas rede interna)
+    expose:
+      - "5432"
+    
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-alugafacil}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    
+    restart: always
+    
+    networks:
+      - alugafacil-network
+
+# =============================================================================
+# Volumes persistentes
+# =============================================================================
+volumes:
+  postgres_data:
+    driver: local
+
+# =============================================================================
+# Rede interna — comunicação entre serviços
+# =============================================================================
+networks:
+  alugafacil-network:
+    driver: bridge
