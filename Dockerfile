@@ -20,7 +20,7 @@ WORKDIR /app
 # para permitir postinstall e geração do client durante npm ci.
 COPY package.json package-lock.json prisma prisma.config.ts ./
 
-ARG DATABASE_URL=postgresql://dummy:dummy@dummy:5432/dummy
+ARG DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dummy
 ENV DATABASE_URL=$DATABASE_URL
 
 # Instala todas as dependências, mas IGNORA scripts (evita rodar `prisma generate` aqui)
@@ -57,7 +57,7 @@ ARG CLOUDINARY_API_SECRET=dummy_secret_for_build
 
 ENV NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=$NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
 ENV NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=$NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
-ENV DATABASE_URL=$DATABASE_URL
+ENV DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dummy
 ENV RESEND_API_KEY=$RESEND_API_KEY
 ENV AUTH_SECRET=$AUTH_SECRET
 ENV CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY

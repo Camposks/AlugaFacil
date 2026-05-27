@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = 'force-dynamic';
 import FormEquipamento from "@/components/admin/FormEquipamento";
 
 export default async function NovoEquipamento() {

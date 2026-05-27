@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
+export const dynamic = "force-dynamic"; // 👈 adicionado
+
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -17,7 +19,7 @@ export async function PUT(
 
     const { id } = await params;
     const equipamento = await prisma.equipamento.update({
-    where: { id },
+      where: { id },
       data: { nome, descricao, categoriaId, precoPorDia, estoque, disponivel, imagens },
     });
 

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 // =============================================================================
 // src/app/api/health/route.ts — Endpoint de healthcheck
 // Usado pelo Docker para verificar se a aplicação está saudável
