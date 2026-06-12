@@ -1,29 +1,78 @@
-services:
-  db:
-    image: postgres:16
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: aluga
-      POSTGRES_PASSWORD: aluga123
-      POSTGRES_DB: alugafacil
-    volumes:
-      - db_data:/var/lib/postgresql/data
+# =============================================================================
+# docker-compose.yml — Ambiente de DESENVOLVIMENTO
+# Ativa hot reload via volumes e usa banco de dados PostgreSQL local
+# =============================================================================
 
+services:
+
+  # ─── Aplicação Next.js (Desenvolvimento) ────────────────────────────────────
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Não especificamos target aqui para permitir o uso das ferramentas de dev
+    
+    # Executa a geração do client do Prisma e inicia o Next em modo dev na porta 3010
+    command: sh -c "npx prisma generate && npm run dev -- -p 3010"
+    
     ports:
       - "3010:3010"
+    
+    # ─── Hot reload via volume ────────────────────────────────────────────────
+    volumes:
+      - .:/app                           # Sincroniza seu código local
+      - /app/node_modules               # Preserva as dependências isoladas dentro do container
+      - /app/.next                      # Preserva o cache de compilação do Next.js
+    
+    env_file:
+      - .env.local
+    
     environment:
-      DATABASE_URL: postgresql://aluga:aluga123@db:5432/alugafacil
-      NEXTAUTH_URL: http://localhost:3010
-      NEXTAUTH_SECRET: change-this-secret
-      CLOUDINARY_CLOUD_NAME: ""
-      CLOUDINARY_API_KEY: ""
-      CLOUDINARY_API_SECRET: ""
-      RESEND_API_KEY: ""
-      EMAIL_FROM: "AlugaFácil <onboarding@example.com>"
+      - NODE_ENV=development
+      - PORT=3010
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-aluga}:${POSTGRES_PASSWORD:-aluga123}@db:5432/${POSTGRES_DB:-alugafacil}?schema=public
+      - NEXTAUTH_URL=http://localhost:3010
+      - NEXTAUTH_SECRET=change-this-secret-locally
+      - EMAIL_FROM=AlugaFácil <onboarding@example.com>
+    
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    
+    restart: unless-stopped
+    
+    networks:
+      - alugafacil-network
 
+  # ─── Banco de dados PostgreSQL (Local) ──────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aluga}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aluga123}
+      POSTGRES_DB: ${POSTGRES_DB:-alugafacil}
+    
+    ports:
+      - "5432:5432" # Expõe para você acessar via DBeaver ou Prisma Studio se quiser
+    
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-aluga} -d $${POSTGRES_DB:-alugafacil}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+# =============================================================================
+# Volumes e Redes Persistentes
+# =============================================================================
 volumes:
   db_data:
+    driver: local
+
+networks:
+  alugafacil-network:
+    driver: bridge

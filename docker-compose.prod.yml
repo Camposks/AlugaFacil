@@ -11,24 +11,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: runner   # Usa o stage final (produção)
+      target: runner   # Força a parada no estágio otimizado de produção
       args:
         NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
         NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-        DATABASE_URL: ${DATABASE_URL:-postgresql://dummy:dummy@dummy:5432/dummy}
-        RESEND_API_KEY: ${RESEND_API_KEY:-dummy}
-        AUTH_SECRET: ${AUTH_SECRET:-dummy}
-        CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-dummy}
-        CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-dummy}
     
-    # Não expõe porta para o host (apenas para frontend via rede interna)
+    # Expõe a porta internamente apenas para o container do Nginx
     expose:
-      - "3000"
+      - "3010"
     
-    # ─── Variáveis de ambiente de produção ────────────────────────────────────
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-alugafacil}
+      - PORT=3010
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-alugafacil}?schema=public
       - AUTH_SECRET=${AUTH_SECRET}
       - NEXTAUTH_URL=${NEXTAUTH_URL}
       - RESEND_API_KEY=${RESEND_API_KEY}
@@ -39,14 +34,12 @@ services:
       - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
       - NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=${NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
     
-    # Aguarda o banco estar saudável
     depends_on:
       db:
         condition: service_healthy
     
-    # Healthcheck
     healthcheck:
-      test: ["CMD", "./scripts/healthcheck.sh", "http://localhost:3000", "/api/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3010/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -73,15 +66,14 @@ services:
       app:
         condition: service_healthy
     
+    # Portas oficiais HTTP e HTTPS abertas para o mundo externo
     ports:
-      - "3010:80"
+      - "80:80"
       - "443:443"
     
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./public:/usr/share/nginx/html:ro
-      # Descomente para HTTPS/SSL:
-      # - ./nginx/certs/:/etc/nginx/certs/:ro
     
     restart: always
     
@@ -97,7 +89,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-alugafacil}
     
-    # Não expõe porta para o host (apenas rede interna)
     expose:
       - "5432"
     
@@ -105,7 +96,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-alugafacil}"]
+      test: ["CMD-SHELL", "pg_isready -U $$${POSTGRES_USER:-postgres} -d $$${POSTGRES_DB:-alugafacil}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -116,16 +107,10 @@ services:
     networks:
       - alugafacil-network
 
-# =============================================================================
-# Volumes persistentes
-# =============================================================================
 volumes:
   postgres_data:
     driver: local
 
-# =============================================================================
-# Rede interna — comunicação entre serviços
-# =============================================================================
 networks:
   alugafacil-network:
     driver: bridge
