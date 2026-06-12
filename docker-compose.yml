@@ -1,101 +1,29 @@
-# =============================================================================
-# docker-compose.yml — Ambiente de DESENVOLVIMENTO
-# Inclui hot reload via volume bind mount
-# Banco de dados PostgreSQL local (não usa Neon em dev)
-# =============================================================================
-
 services:
-
-  # ─── Aplicação Next.js ──────────────────────────────────────────────────────
-  app:
-    # Em desenvolvimento, builda a partir do Dockerfile local
-    build:
-      context: .
-      dockerfile: Dockerfile
-      # NÃO especifica target — usa todos os stages (deps > builder > runner)
-      # Para dev, será necessário montar volumes e rodar npm run dev
-      args:
-        NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: test_cloud
-        NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: test_preset
-        DATABASE_URL: postgresql://dummy:dummy@dummy:5432/dummy
-        RESEND_API_KEY: dummy
-        AUTH_SECRET: dummy
-        CLOUDINARY_API_KEY: dummy
-        CLOUDINARY_API_SECRET: dummy
-    
-    # ⚠️ ADAPTE: Em dev usamos o comando de desenvolvimento
-    command: sh -c "npx prisma generate && npm run dev"
-    
-    ports:
-      - "3010:3000"
-    
-    # ─── Hot reload via volume ────────────────────────────────────────────────
-    # O código fonte local é montado dentro do container
-    # Qualquer alteração reflete imediatamente sem rebuild
-    volumes:
-      - .:/app                          # Código fonte
-      - /app/node_modules               # Preserva node_modules do container
-      - /app/.next                      # Preserva cache de build do Next.js
-    
-    # ─── Variáveis de ambiente ────────────────────────────────────────────────
-    # ⚠️ ADAPTE: Em desenvolvimento, lê do arquivo .env.local
-    env_file:
-      - .env.local
-    
-    # Sobrescreve o DATABASE_URL para usar o banco local (não o Neon)
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/alugafacil
-      - NODE_ENV=development
-    
-    # Aguarda o banco estar saudável antes de iniciar
-    depends_on:
-      db:
-        condition: service_healthy
-    
-    # Reinicia automaticamente em caso de falha
-    restart: unless-stopped
-    
-    networks:
-      - alugafacil-network
-
-  # ─── Banco de dados PostgreSQL (local para desenvolvimento) ─────────────────
   db:
-    image: postgres:16-alpine
-    
-    environment:
-      # ⚠️ ADAPTE: Mude as credenciais locais se necessário
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: alugafacil
-    
-    ports:
-      - "5432:5432"   # Expõe para acessar com Prisma Studio localmente
-    
-    volumes:
-      - postgres_data:/var/lib/postgresql/data   # Persiste dados entre restarts
-    
-    # Healthcheck para garantir que o banco está pronto antes do app iniciar
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d alugafacil"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    
+    image: postgres:16
     restart: unless-stopped
-    networks:
-      - alugafacil-network
+    environment:
+      POSTGRES_USER: aluga
+      POSTGRES_PASSWORD: aluga123
+      POSTGRES_DB: alugafacil
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
-# =============================================================================
-# Volumes persistentes
-# =============================================================================
+  app:
+    build: .
+    ports:
+      - "3010:3010"
+    environment:
+      DATABASE_URL: postgresql://aluga:aluga123@db:5432/alugafacil
+      NEXTAUTH_URL: http://localhost:3010
+      NEXTAUTH_SECRET: change-this-secret
+      CLOUDINARY_CLOUD_NAME: ""
+      CLOUDINARY_API_KEY: ""
+      CLOUDINARY_API_SECRET: ""
+      RESEND_API_KEY: ""
+      EMAIL_FROM: "AlugaFácil <onboarding@example.com>"
+    depends_on:
+      - db
+
 volumes:
-  postgres_data:
-    driver: local
-
-# =============================================================================
-# Rede interna — os serviços se comunicam pelo nome (ex: db, app)
-# =============================================================================
-networks:
-  alugafacil-network:
-    driver: bridge
+  db_data:

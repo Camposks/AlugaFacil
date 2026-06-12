@@ -2,10 +2,30 @@ import { prisma } from "@/lib/prisma";
 import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXTAUTH_URL || "https://aluga-facil-alpha.vercel.app";
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3010";
 
-  // URLs estáticas (sempre incluídas)
-  const staticUrls: MetadataRoute.Sitemap = [
+  let equipamentosUrls: any[] = [];
+
+  // Skip database query during build if DATABASE_URL is not reachable
+  if (process.env.DATABASE_URL) {
+    try {
+      const equipamentos = await prisma.equipamento.findMany({
+        where: { disponivel: true },
+        select: { id: true, criadoEm: true },
+      });
+
+      equipamentosUrls = equipamentos.map((eq) => ({
+        url: `${baseUrl}/equipamentos/${eq.id}`,
+        lastModified: eq.criadoEm,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      }));
+    } catch {
+      // Silently fail during build, will be generated at runtime
+    }
+  }
+
+  return [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -18,27 +38,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.9,
     },
+    ...equipamentosUrls,
   ];
-
-  try {
-    // Tenta buscar equipamentos do banco
-    // Se falhar (durante build ou sem banco), retorna apenas URLs estáticas
-    const equipamentos = await prisma.equipamento.findMany({
-      where: { disponivel: true },
-      select: { id: true, criadoEm: true },
-    });
-
-    const equipamentosUrls = equipamentos.map((eq) => ({
-      url: `${baseUrl}/equipamentos/${eq.id}`,
-      lastModified: eq.criadoEm,
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    }));
-
-    return [...staticUrls, ...equipamentosUrls];
-  } catch (error) {
-    // Durante build ou sem conexão ao banco, retorna apenas URLs estáticas
-    console.warn("⚠️ Sitemap: Database connection failed, using static URLs only");
-    return staticUrls;
-  }
 }

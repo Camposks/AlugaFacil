@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXTAUTH_URL || "https://aluga-facil-alpha.vercel.app";
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3010";
 
   return {
     rules: {
