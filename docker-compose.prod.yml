@@ -17,18 +17,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Servidor temporário automático para aplicar as tabelas do Prisma 7
-  migration:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      DATABASE_URL: postgresql://aluga:aluga123@db:5432/alugafacil?schema=public
-    depends_on:
-      db:
-        condition: service_healthy
-    command: npx prisma migrate deploy
-
   app:
     build:
       context: .
@@ -39,6 +27,9 @@ services:
       - "3010:3010"
     environment:
       DATABASE_URL: postgresql://aluga:aluga123@db:5432/alugafacil?schema=public
+      NEXTAUTH_URL: http://95.111.238.203:3010
+      NEXTAUTH_SECRET: alugafacil_segredo_super_secreto_2026
+      NEXT_PUBLIC_APP_URL: http://95.111.238.203:3010
     depends_on:
       db:
         condition: service_healthy
