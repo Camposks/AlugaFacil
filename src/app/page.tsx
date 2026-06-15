@@ -9,6 +9,8 @@ export const metadata: Metadata = {
     "Encontre mais de 500 equipamentos disponíveis para alugar. Entrega em até 24h ou retirada na loja. Simples, rápido e seguro.",
 };
 
+export const dynamic = "force-dynamic"
+
 async function getEquipamentos() {
   try {
     return await prisma.equipamento.findMany({
