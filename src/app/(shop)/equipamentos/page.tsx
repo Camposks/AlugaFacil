@@ -82,8 +82,8 @@ export default async function EquipamentosPage({ searchParams }: Props) {
     <div className="bg-gray-50 min-h-screen">
 
       {/* Banner */}
-      <div className="bg-[#1D9E75] py-10 px-4 text-center">
-        <h1 className="text-[#E1F5EE] text-2xl font-medium mb-2">
+      <div className="bg-[#1D9E75] py-8 md:py-10 px-4 text-center">
+        <h1 className="text-[#E1F5EE] text-xl md:text-2xl font-medium mb-2">
           Encontre o equipamento ideal
         </h1>
         <p className="text-[#9FE1CB] text-sm mb-6">
@@ -96,7 +96,7 @@ export default async function EquipamentosPage({ searchParams }: Props) {
       </div>
 
       {/* Barra de filtros */}
-      <div className="bg-white border-b border-gray-100 px-8 py-2.5 flex items-center justify-center gap-2 flex-wrap">
+      <div className="bg-white border-b border-gray-100 px-4 md:px-8 py-2.5 flex items-center justify-start md:justify-center gap-2 overflow-x-auto md:flex-wrap">
         <Link
           href={{ pathname: "/equipamentos", query: { ...params, disponivel: apenasDisponiveis ? "false" : "true", pagina: 1 } }}
           className={`h-8 px-3 rounded-full border text-xs inline-flex items-center justify-center gap-1.5 transition-colors ${
@@ -129,7 +129,7 @@ export default async function EquipamentosPage({ searchParams }: Props) {
       </div>
 
       {/* Resultados */}
-      <div className="px-8 py-4 flex items-center justify-between">
+      <div className="px-4 md:px-8 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
         <span className="text-xs text-gray-400">
           {total} equipamento{total !== 1 ? "s" : ""} encontrado{total !== 1 ? "s" : ""}
         </span>
@@ -164,10 +164,10 @@ export default async function EquipamentosPage({ searchParams }: Props) {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-4 gap-4 px-8 pb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-4 md:px-8 pb-6">
           {equipamentos.map((eq: EquipamentoItem) => (
             <div key={eq.id} className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
-              <div className="relative h-36 bg-gray-50 flex items-center justify-center">
+              <div className="relative h-32 md:h-36 bg-gray-50 flex items-center justify-center">
                 {eq.imagens[0] ? (
                   <Image src={eq.imagens[0]} alt={eq.nome} fill className="object-contain p-2"/>
                 ) : (

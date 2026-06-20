@@ -33,7 +33,7 @@ export default async function AdminDashboard() {
   return (
     <div>
       {/* Topbar */}
-      <div className="bg-white border-b border-gray-100 px-6 h-14 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-100 px-4 md:px-6 h-14 flex items-center justify-between pl-14 lg:pl-6">
         <h1 className="text-base font-medium text-gray-800">Dashboard</h1>
         <Link
           href="/admin/equipamentos/novo"
@@ -46,9 +46,9 @@ export default async function AdminDashboard() {
         </Link>
       </div>
 
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         {/* Métricas */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
           {[
             { label: "Equipamentos", valor: totalEquipamentos, sub: `${equipamentosIndisponiveis} indisponíveis`, href: "/admin/equipamentos" },
             { label: "Aluguéis ativos", valor: alugueisAtivos, sub: `${totalAlugueis} no total`, href: "/admin/alugueis" },
@@ -73,7 +73,8 @@ export default async function AdminDashboard() {
             <span className="text-sm font-medium text-gray-800">Aluguéis recentes</span>
             <Link href="/admin/alugueis" className="text-xs text-[#1D9E75]">Ver todos →</Link>
           </div>
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-150">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
                 <th className="text-left px-5 py-3 text-xs text-gray-400 font-medium">Equipamento</th>
@@ -127,5 +128,6 @@ export default async function AdminDashboard() {
         </div>
       </div>
     </div>
+  </div>
   );
 }

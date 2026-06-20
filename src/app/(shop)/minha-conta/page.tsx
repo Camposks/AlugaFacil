@@ -68,8 +68,8 @@ export default async function MinhaContaPage() {
     <div className="bg-gray-50 min-h-screen">
 
       {/* Header da conta */}
-      <div className="bg-[#1D9E75] px-8 py-10">
-        <div className="max-w-4xl mx-auto flex items-center gap-5">
+      <div className="bg-[#1D9E75] px-4 md:px-8 py-8 md:py-10">
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-center sm:text-left">
           <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-medium text-white">
             {usuario?.nome.slice(0, 2).toUpperCase()}
           </div>
@@ -90,10 +90,10 @@ export default async function MinhaContaPage() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-8 py-8 flex flex-col gap-6">
+      <div className="max-w-4xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col gap-6">
 
         {/* Resumo */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             { label: "Total de aluguéis", valor: alugueis.length },
             { label: "Aluguéis ativos", valor: ativos.length },
@@ -112,7 +112,7 @@ export default async function MinhaContaPage() {
             <h2 className="text-base font-medium text-gray-800 mb-3">Aluguéis ativos</h2>
             <div className="flex flex-col gap-3">
               {ativos.map((al: AluguelItem) => (
-                <div key={al.id} className="bg-white border border-gray-100 rounded-xl p-4 flex items-center gap-4">
+                <div key={al.id} className="bg-white border border-gray-100 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                   <div className="relative w-20 h-16 bg-gray-50 rounded-lg overflow-hidden shrink-0">
                     {al.equipamento.imagens[0] ? (
                       <Image
@@ -182,7 +182,7 @@ export default async function MinhaContaPage() {
             <div className="flex flex-col gap-3">
               {historico.map((al: AluguelItem) => (
                 <div key={al.id} className="bg-white border border-gray-100 rounded-xl p-4">
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                     <div className="relative w-16 h-14 bg-gray-50 rounded-lg overflow-hidden shrink-0">
                       {al.equipamento.imagens[0] ? (
                         <Image

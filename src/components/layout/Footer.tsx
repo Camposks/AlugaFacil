@@ -3,10 +3,10 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-gray-900 pt-12 pb-6">
-      <div className="max-w-7xl mx-auto px-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
 
         {/* Grid principal */}
-        <div className="grid grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-8">
 
           {/* Marca */}
           <div>
@@ -81,7 +81,7 @@ export default function Footer() {
         <div className="border-t border-gray-800 mb-5" />
 
         {/* Bottom */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
           <p className="text-xs text-gray-600">
             © {new Date().getFullYear()} <span className="text-[#1D9E75]">Campos</span>. Todos os direitos reservados.
           </p>

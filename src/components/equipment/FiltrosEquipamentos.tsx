@@ -34,18 +34,18 @@ export default function FiltrosEquipamentos({ categorias, searchParams }: Props)
   }
 
   return (
-    <form onSubmit={handleBusca} className="flex items-center gap-2 bg-white rounded-xl p-1.5 pl-4 max-w-2xl mx-auto">
+    <form onSubmit={handleBusca} className="flex flex-col md:flex-row items-stretch md:items-center gap-2 bg-white rounded-xl p-2 md:p-1.5 md:pl-4 max-w-2xl mx-auto">
       <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2">
         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
-      <input
+     <input
         type="text"
         value={busca}
         onChange={(e) => setBusca(e.target.value)}
         placeholder="Buscar equipamentos..."
-        className="flex-2 min-w-0 border-none outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent"
+        className="flex-2 min-w-0 border-none outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent px-2 md:px-0 h-9 md:h-auto"
       />
-      <div className="w-px h-5 bg-gray-200 shrink-0" />
+      <div className="hidden md:block w-px h-5 bg-gray-200 shrink-0" />
       <select
         value={categoria}
         onChange={(e) => setCategoria(e.target.value)}
@@ -56,7 +56,7 @@ export default function FiltrosEquipamentos({ categorias, searchParams }: Props)
           <option key={c} value={c}>{c}</option>
         ))}
       </select>
-      <div className="w-px h-5 bg-gray-200 shrink-0" />
+      <div className="hidden md:block w-px h-5 bg-gray-200 shrink-0" />
       <select
         value={preco}
         onChange={(e) => setPreco(e.target.value)}

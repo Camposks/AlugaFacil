@@ -72,11 +72,11 @@ function LoginPageContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-4xl grid grid-cols-2 rounded-2xl overflow-hidden shadow-sm border border-gray-200">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 py-8">
+      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 rounded-2xl overflow-hidden shadow-sm border border-gray-200">
 
         {/* Lado esquerdo */}
-        <div className="bg-[#1D9E75] p-10 flex flex-col justify-between">
+        <div className="hidden md:flex bg-[#1D9E75] p-10 flex-col justify-between">
           <div>
             {/* Logo */}
             <div className="mb-10 ml-[50%] transform -translate-x-1/2">
@@ -114,7 +114,7 @@ function LoginPageContent() {
         </div>
 
         {/* Lado direito */}
-        <div className="bg-white p-10 flex flex-col justify-center">
+        <div className="bg-white p-6 md:p-10 flex flex-col justify-center">
           {/* Abas */}
           <div className="flex border-b border-gray-200 mb-6">
             {(["login", "cadastro"] as const).map((a) => (

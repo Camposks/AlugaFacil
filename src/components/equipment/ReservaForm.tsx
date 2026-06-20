@@ -114,7 +114,7 @@ export default function ReservaForm({
   const { primeiroDia, totalDias: totalDiasNoMes } = getDiasDoMes(mesAtual, anoAtual);
 
   return (
-    <div className="bg-white border border-gray-100 rounded-xl p-5 sticky top-20">
+    <div className="bg-white border border-gray-100 rounded-xl p-5 lg:sticky lg:top-20">
       {/* Preço */}
       <div className="flex items-baseline gap-1.5 mb-5">
         <span className="text-2xl font-medium text-[#1D9E75]">

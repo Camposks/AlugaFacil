@@ -31,27 +31,27 @@ export default async function Home() {
     <div className="bg-gray-50 min-h-screen">
 
       {/* Hero */}
-      <section className="bg-[#1D9E75] py-16 flex flex-col items-center text-center gap-5 px-4">
+      <section className="bg-[#1D9E75] py-12 md:py-16 flex flex-col items-center text-center gap-5 px-4">
         <div className="inline-flex items-center gap-2 bg-white/15 rounded-full px-4 py-1.5">
-          <span className="text-[#E1F5EE] text-sm">Aluguel simples e rápido</span>
+          <span className="text-[#E1F5EE] text-xs md:text-sm">Aluguel simples e rápido</span>
         </div>
-        <h1 className="text-[#E1F5EE] text-3xl font-medium leading-snug max-w-xl">
+        <h1 className="text-[#E1F5EE] text-2xl md:text-3xl font-medium leading-snug max-w-xl px-2">
           Tudo que você precisa para sua obra ou reforma
         </h1>
-        <p className="text-[#9FE1CB] text-sm leading-relaxed max-w-md">
+        <p className="text-[#9FE1CB] text-sm leading-relaxed max-w-md px-2">
           Alugue máquinas, ferramentas e equipamentos com entrega rápida e preço justo.
         </p>
         <Link
-  href="/equipamentos"
-  className="h-11 px-7 bg-transparent border-2 border-white/60 text-[#E1F5EE] text-sm font-medium rounded-full hover:bg-white/10 hover:border-white transition-colors flex items-center justify-center gap-2"
->
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E1F5EE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8"/>
-    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-  </svg>
-  Ver equipamentos
-</Link>
-        <div className="flex gap-10 mt-2">
+          href="/equipamentos"
+          className="h-11 px-6 md:px-7 bg-transparent border-2 border-white/60 text-[#E1F5EE] text-sm font-medium rounded-full hover:bg-white/10 hover:border-white transition-colors flex items-center justify-center gap-2"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E1F5EE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Ver equipamentos
+        </Link>
+        <div className="grid grid-cols-4 gap-3 md:gap-10 mt-2 w-full max-w-sm md:max-w-none md:flex md:justify-center px-2">
           {[
             { num: "500+", label: "Equipamentos" },
             { num: "2k+", label: "Clientes" },
@@ -59,24 +59,24 @@ export default async function Home() {
             { num: "4.9", label: "Avaliação" },
           ].map((s) => (
             <div key={s.label} className="text-center">
-              <div className="text-[#E1F5EE] text-xl font-medium">{s.num}</div>
-              <div className="text-[#9FE1CB] text-xs mt-0.5">{s.label}</div>
+              <div className="text-[#E1F5EE] text-base md:text-xl font-medium">{s.num}</div>
+              <div className="text-[#9FE1CB] text-[10px] md:text-xs mt-0.5">{s.label}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* Equipamentos em destaque */}
-      <section className="px-8 py-8">
+      <section className="px-4 md:px-8 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-medium text-gray-800">Equipamentos em destaque</h2>
-          <Link href="/equipamentos" className="text-sm text-[#1D9E75]">
+          <h2 className="text-base md:text-lg font-medium text-gray-800">Equipamentos em destaque</h2>
+          <Link href="/equipamentos" className="text-sm text-[#1D9E75] whitespace-nowrap">
             Ver todos →
           </Link>
         </div>
 
         {equipamentos.length === 0 ? (
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="bg-white border border-gray-100 rounded-xl overflow-hidden">
                 <div className="h-36 bg-gray-100" />
@@ -92,17 +92,17 @@ export default async function Home() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             {equipamentos.map((eq) => (
               <div key={eq.id} className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
-                <div className="relative h-48 bg-gray-50 flex items-center justify-center">
+                <div className="relative h-32 md:h-48 bg-gray-50 flex items-center justify-center">
                   {eq.imagens[0] ? (
                     <Image
                       src={eq.imagens[0]}
                       alt={eq.nome}
                       fill
                       className="object-contain p-2"
-                      sizes="(max-width: 768px) 100vw, 25vw"
+                      sizes="(max-width: 768px) 50vw, 25vw"
                     />
                   ) : (
                     <svg className="w-10 h-10 stroke-gray-300" viewBox="0 0 24 24" fill="none" strokeWidth="1.5">
@@ -110,21 +110,21 @@ export default async function Home() {
                     </svg>
                   )}
                 </div>
-                <div className="p-3">
-                  <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">
+                <div className="p-2.5 md:p-3">
+                  <div className="text-[9px] md:text-[10px] text-gray-400 uppercase tracking-wider mb-1">
                     {eq.categoria.nome}
                   </div>
-                  <div className="text-sm font-medium text-gray-800 mb-2">{eq.nome}</div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium text-[#1D9E75]">
+                  <div className="text-xs md:text-sm font-medium text-gray-800 mb-2 leading-snug">{eq.nome}</div>
+                  <div className="flex items-center justify-between gap-1">
+                    <div className="text-xs md:text-sm font-medium text-[#1D9E75] truncate">
                       R$ {eq.precoPorDia.toFixed(2)}
-                      <span className="text-xs font-normal text-gray-400"> /dia</span>
+                      <span className="text-[10px] md:text-xs font-normal text-gray-400"> /dia</span>
                     </div>
                     <Link
                       href={`/equipamentos/${eq.id}`}
-                      className="h-8 px-3 bg-[#1D9E75] text-white text-xs rounded-lg flex items-center gap-1.5 hover:bg-[#0F6E56] transition-colors"
+                      className="h-7 md:h-8 px-2 md:px-3 bg-[#1D9E75] text-white text-[10px] md:text-xs rounded-lg flex items-center gap-1 md:gap-1.5 hover:bg-[#0F6E56] transition-colors shrink-0"
                     >
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="hidden sm:block">
                         <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
                       </svg>
@@ -139,9 +139,9 @@ export default async function Home() {
       </section>
 
       {/* Como funciona */}
-      <section className="bg-white border-t border-b border-gray-100 px-8 py-10">
-        <h2 className="text-lg font-medium text-gray-800 text-center mb-8">Como funciona</h2>
-        <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto">
+      <section className="bg-white border-t border-b border-gray-100 px-4 md:px-8 py-8 md:py-10">
+        <h2 className="text-base md:text-lg font-medium text-gray-800 text-center mb-8">Como funciona</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-3xl mx-auto">
           {[
             {
               num: "1",
@@ -164,7 +164,7 @@ export default async function Home() {
                 {step.num}
               </div>
               <h3 className="text-sm font-medium text-gray-800 mb-2">{step.titulo}</h3>
-              <p className="text-xs text-gray-500 leading-relaxed">{step.descricao}</p>
+              <p className="text-xs text-gray-500 leading-relaxed max-w-xs mx-auto">{step.descricao}</p>
             </div>
           ))}
         </div>

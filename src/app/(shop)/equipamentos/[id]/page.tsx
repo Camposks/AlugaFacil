@@ -91,7 +91,7 @@ function tempoRelativo(data: Date) {
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Breadcrumb */}
-      <div className="bg-white border-b border-gray-100 px-8 py-3 flex items-center gap-2 text-xs text-gray-400">
+      <div className="bg-white border-b border-gray-100 px-4 md:px-8 py-3 flex items-center gap-2 text-xs text-gray-400 overflow-x-auto">
         <Link href="/" className="text-[#1D9E75]">Início</Link>
         <span>›</span>
         <Link href="/equipamentos" className="text-[#1D9E75]">Equipamentos</Link>
@@ -99,14 +99,14 @@ function tempoRelativo(data: Date) {
         <span className="text-gray-600">{equipamento.nome}</span>
       </div>
 
-      <div className="max-w-6xl mx-auto px-8 py-6 grid grid-cols-[1fr_340px] gap-6">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
 
         {/* Coluna esquerda */}
         <div className="flex flex-col gap-5">
 
           {/* Galeria */}
           <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
-            <div className="relative h-72 bg-gray-50 flex items-center justify-center">
+            <div className="relative h-56 md:h-72 bg-gray-50 flex items-center justify-center">
               {equipamento.imagens[0] ? (
                 <Image
                   src={equipamento.imagens[0]}
@@ -211,7 +211,7 @@ function tempoRelativo(data: Date) {
               <h2 className="text-base font-medium text-gray-800 mb-4">
                 Equipamentos relacionados
               </h2>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {relacionados.map((rel: EquipamentoRelacionado) => (
                   <Link
                     key={rel.id}
